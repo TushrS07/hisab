@@ -31,7 +31,7 @@ export default function Login({ setAuth }) {
     <div className="page" style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
       <div className="card" style={{ width: "100%" }}>
         <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-          <img src="/logo.png" alt="Khata Plus" style={{ width: "150px", height: "150px", objectFit: "contain", marginBottom: "1rem" }} />
+          <img src="/logo.png" alt="Khata Plus" style={{ width: "220px", height: "220px", objectFit: "contain", marginBottom: "1rem", background: "white", borderRadius: "1rem", padding: "0.5rem" }} />
           <h1 style={{ fontSize: "1.5rem", fontWeight: "800" }}>Khata Plus</h1>
           <p style={{ color: "var(--text-light)", fontSize: "0.9rem" }}>Sign in to continue</p>
         </div>
