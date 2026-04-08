@@ -17,6 +17,11 @@ const loanSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    entryType: {
+      type: String,
+      enum: ["credit", "debit"],
+      default: "credit",
+    },
     voucherNumber: {
       type: String,
       required: true,

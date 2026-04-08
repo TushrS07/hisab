@@ -4,106 +4,85 @@ import { Link } from "react-router-dom";
 
 export default function Users() {
   const [users, setUsers] = useState([]);
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editName, setEditName] = useState("");
+  const [editPhone, setEditPhone] = useState("");
 
   const fetchUsers = async () => {
     const res = await API.get("/users");
     setUsers(res.data);
   };
 
-  const addUser = async () => {
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this user?")) return;
     try {
-      setError("");
-      if (!name.trim()) {
-        setError("Please enter a name");
-        return;
-      }
-      setLoading(true);
-      await API.post("/users", { name, phone });
-      setName("");
-      setPhone("");
-      fetchUsers();
-    } catch (err) {
-      setError(err.response?.data || "Error adding user");
-    } finally {
-      setLoading(false);
+      await API.delete(`/users/${id}`);
+      setUsers((prev) => prev.filter((u) => u._id !== id));
+    } catch {
+      setError("Error deleting user");
     }
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  const startEdit = (u) => {
+    setEditingId(u._id);
+    setEditName(u.name);
+    setEditPhone(u.phone || "");
+  };
+
+  const handleEdit = async (id) => {
+    try {
+      setError("");
+      if (!editName.trim()) { setError("Name is required"); return; }
+      await API.put(`/users/${id}`, { name: editName, phone: editPhone });
+      setEditingId(null);
+      fetchUsers();
+    } catch (err) {
+      setError(err.response?.data || "Error updating user");
+    }
+  };
+
+  useEffect(() => { fetchUsers(); }, []);
 
   return (
-    <div className="container">
+    <div className="page">
       <div className="card">
-        <div className="card-header">
-          <h2 className="card-title">👥 Manage Users</h2>
-        </div>
-
-        <div className="form-section">
-          <h3 className="form-section-title">Add New User</h3>
-          
-          {error && <div className="alert alert-error">{error}</div>}
-          
-          <div className="form-row">
-            <div className="form-group">
-              <label>Name *</label>
-              <input
-                type="text"
-                placeholder="Enter user name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label>Phone</label>
-              <input
-                type="tel"
-                placeholder="Enter phone number"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-            </div>
+        <div className="card-title">Users ({users.length})</div>
+        {error && <div className="alert alert-error">{error}</div>}
+        {users.length === 0 ? (
+          <div className="empty">
+            <div className="icon">📭</div>
+            <div className="text">No users yet</div>
           </div>
-          
-          <button className="btn-primary" onClick={addUser} disabled={loading} style={{ width: "100%" }}>
-            {loading ? (
-              <span className="btn-loader">
-                <span className="loader-spinner"></span>
-                Adding user...
-              </span>
-            ) : (
-              "✓ Add User"
-            )}
-          </button>
-        </div>
-
-        <div>
-          <h3 className="form-section-title">Users List ({users.length})</h3>
-          {users.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-state-icon">📭</div>
-              <div className="empty-state-text">No users yet. Add one to get started!</div>
-            </div>
-          ) : (
-            <ul className="user-list">
-              {users.map((u) => (
-                <li key={u._id} className="user-item">
-                  <div className="user-info">
-                    <Link to={`/user/${u.name}`} className="user-name">
-                      {u.name}
-                    </Link>
-                    {u.phone && <div className="user-phone">📱 {u.phone}</div>}
+        ) : (
+          <ul className="entry-list">
+            {users.map((u) => (
+              <li key={u._id} className="entry-item" style={editingId === u._id ? { flexDirection: "column", alignItems: "stretch" } : {}}>
+                {editingId === u._id ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                    <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Name" />
+                    <input type="tel" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="Phone (optional)" />
+                    <div className="btn-row">
+                      <button className="btn-primary" onClick={() => handleEdit(u._id)}>Save</button>
+                      <button className="btn-secondary" onClick={() => setEditingId(null)}>Cancel</button>
+                    </div>
                   </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+                ) : (
+                  <>
+                    <div className="entry-info">
+                      <Link to={`/user/${u.name}`} className="entry-name" style={{ color: "var(--primary)", textDecoration: "none" }}>{u.name}</Link>
+                      {u.phone && <div className="entry-meta">{u.phone}</div>}
+                    </div>
+                    <div className="entry-actions">
+                      <button className="btn-edit-sm" onClick={() => startEdit(u)} title="Edit">✏️</button>
+                      <button className="btn-danger-sm" onClick={() => handleDelete(u._id)} title="Delete">🗑️</button>
+                    </div>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

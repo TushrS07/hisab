@@ -7,175 +7,76 @@ export default function UserDetail() {
   const [loans, setLoans] = useState([]);
   const [users, setUsers] = useState([]);
 
-  const fetchLoans = async () => {
-    const res = await API.get(`/loans/${name}`);
-    setLoans(res.data);
-  };
-
-  const fetchUsers = async () => {
-    const res = await API.get("/users");
-    setUsers(res.data);
-  };
-
   useEffect(() => {
-    fetchLoans();
-    fetchUsers();
+    API.get(`/loans/${name}`).then((res) => setLoans(res.data));
+    API.get("/users").then((res) => setUsers(res.data));
   }, [name]);
 
-  const calculate = () => {
-    let total = 0;
-    let interest = 0;
+  const total = loans.reduce((sum, l) => sum + l.amount, 0);
 
-    loans.forEach((l) => {
-      total += l.amount;
-
-      const days = (Date.now() - new Date(l.date)) / (1000*60*60*24);
-      const years = days / 365;
-
-      interest += (l.amount * l.interestRate * years) / 100;
-    });
-
-    return { total, interest };
-  };
-
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const getDaysAgo = (date) => {
-    const days = Math.floor((Date.now() - new Date(date)) / (1000*60*60*24));
-    if (days === 0) return "Today";
-    if (days === 1) return "Yesterday";
-    return `${days} days ago`;
-  };
-
-  const { total, interest } = calculate();
+  const formatDate = (d) =>
+    new Date(d).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" });
 
   return (
-    <div className="user-details-wrapper">
-      {/* Main Content */}
-      <div className="user-details-main">
-        <div className="card">
-          <div className="card-header">
-            <h2 className="card-title">💼 {name}'s Hisab</h2>
-            <p style={{ marginTop: "0.5rem", color: "var(--text-light)", fontSize: "0.9rem" }}>
-              Loan details and settlement
-            </p>
-          </div>
-
-          <div style={{ marginBottom: "2rem" }}>
-            <Link to={`/add-loan/${name}`} className="btn-primary" style={{ display: "inline-block", marginBottom: "1.5rem" }}>
-              + Add Loan
-            </Link>
-          </div>
-
-          {loans.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-state-icon">📋</div>
-              <div className="empty-state-text">No loans yet. Add one to get started!</div>
-            </div>
-          ) : (
-            <>
-              <div style={{ marginBottom: "2rem" }}>
-                <h3 className="form-section-title">📝 Loans List</h3>
-                <div style={{ overflowX: "auto" }}>
-                  <table className="loans-table">
-                    <thead>
-                      <tr>
-                        <th>Amount</th>
-                        <th>Date</th>
-                        <th>Voucher #</th>
-                        <th>Interest %</th>
-                        <th>Days</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {loans.map((l) => {
-                        const days = Math.floor((Date.now() - new Date(l.date)) / (1000*60*60*24));
-                        return (
-                          <tr key={l._id}>
-                            <td><strong>₹{l.amount.toLocaleString('en-IN')}</strong></td>
-                            <td>{formatDate(l.date)}</td>
-                            <td>{l.voucherNumber || "-"}</td>
-                            <td>{l.interestRate}%</td>
-                            <td>{days} days</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div className="form-section">
-                <h3 className="form-section-title">💰 Settlement Summary</h3>
-                
-                <div className="summary-grid">
-                  <div className="summary-card" style={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}>
-                    <div className="summary-card-label">Principal</div>
-                    <div className="summary-card-value">₹{total.toLocaleString('en-IN')}</div>
-                  </div>
-
-                  <div className="summary-card" style={{ background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)" }}>
-                    <div className="summary-card-label">Interest</div>
-                    <div className="summary-card-value">₹{interest.toFixed(2)}</div>
-                  </div>
-
-                  <div className="summary-card" style={{ background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)" }}>
-                    <div className="summary-card-label">Total Due</div>
-                    <div className="summary-card-value">₹{(total + interest).toFixed(2)}</div>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+    <div className="page" style={{ maxWidth: "900px" }}>
+      {/* User pills */}
+      <div className="sidebar-links">
+        {users.map((u) => (
+          <Link key={u._id} to={`/user/${u.name}`} className={`sidebar-link ${name === u.name ? "active" : ""}`}>
+            {u.name}
+          </Link>
+        ))}
       </div>
 
-      {/* Sidebar */}
-      <div className="user-details-sidebar card" style={{ height: "fit-content", position: "sticky", top: "2rem" }}>
-        <div style={{ padding: "1rem", borderBottom: "2px solid var(--border)", marginBottom: "1rem" }}>
-          <h3 style={{ fontSize: "1rem", fontWeight: "600", margin: "0", color: "var(--text)" }}>👥 Users</h3>
+      <div className="card">
+        <div className="card-title">{name}'s Entries</div>
+
+        <div className="summary-row">
+          <div className="summary-item">
+            <div className="summary-label">Total</div>
+            <div className="summary-value">{total.toLocaleString("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 })}</div>
+          </div>
+          <div className="summary-item">
+            <div className="summary-label">Entries</div>
+            <div className="summary-value">{loans.length}</div>
+          </div>
+          <div className="summary-item">
+            <div className="summary-label">Latest</div>
+            <div className="summary-value" style={{ fontSize: "0.85rem" }}>{loans.length > 0 ? formatDate(loans[loans.length - 1].date) : "-"}</div>
+          </div>
         </div>
-        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-          {users.map((u) => (
-            <li key={u._id} style={{ marginBottom: "0.5rem" }}>
-              <Link 
-                to={`/user/${u.name}`}
-                style={{
-                  display: "block",
-                  padding: "0.75rem",
-                  borderRadius: "0.375rem",
-                  textDecoration: "none",
-                  background: name === u.name ? "linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)" : "var(--bg-secondary)",
-                  color: name === u.name ? "white" : "var(--primary)",
-                  fontWeight: name === u.name ? "600" : "500",
-                  border: name === u.name ? "2px solid var(--primary)" : "1px solid transparent",
-                  transition: "all 0.3s ease",
-                  cursor: "pointer"
-                }}
-                onMouseEnter={(e) => {
-                  if (name !== u.name) {
-                    e.currentTarget.style.background = "rgba(102, 126, 234, 0.15)";
-                    e.currentTarget.style.transform = "translateX(4px)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (name !== u.name) {
-                    e.currentTarget.style.background = "var(--bg-secondary)";
-                    e.currentTarget.style.transform = "translateX(0)";
-                  }
-                }}
-              >
-                {u.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
+
+        <Link to={`/add-loan/${name}`} className="btn-primary" style={{ display: "block", textAlign: "center", textDecoration: "none", marginBottom: "1rem" }}>
+          + Add Entry
+        </Link>
+
+        {loans.length === 0 ? (
+          <div className="empty">
+            <div className="icon">📋</div>
+            <div className="text">No entries yet</div>
+          </div>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table className="loans-table">
+              <thead>
+                <tr>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Voucher</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loans.map((l) => (
+                  <tr key={l._id}>
+                    <td style={{ fontWeight: 700, color: "var(--primary)" }}>{l.amount.toLocaleString("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 })}</td>
+                    <td>{formatDate(l.date)}</td>
+                    <td>{l.voucherNumber || "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

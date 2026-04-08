@@ -25,49 +25,31 @@ export default function Login({ setAuth }) {
     }
   };
 
+  const onKey = (e) => e.key === "Enter" && handleLogin();
+
   return (
-    <div className="container" style={{ alignItems: "center", justifyContent: "center" }}>
-      <div className="card" style={{ maxWidth: "450px" }}>
-        <div className="card-header" style={{ textAlign: "center" }}>
-          <h2 className="card-title">🔐 Login</h2>
-          <p style={{ marginTop: "0.5rem", color: "var(--text-light)", fontSize: "0.95rem" }}>
-            Welcome to Hisab
-          </p>
+    <div className="page" style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
+      <div className="card" style={{ width: "100%" }}>
+        <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+          <img src="/logo.png" alt="Khata Plus" style={{ width: "150px", height: "150px", objectFit: "contain", marginBottom: "1rem" }} />
+          <h1 style={{ fontSize: "1.5rem", fontWeight: "800" }}>Khata Plus</h1>
+          <p style={{ color: "var(--text-light)", fontSize: "0.9rem" }}>Sign in to continue</p>
         </div>
 
         {error && <div className="alert alert-error">{error}</div>}
 
         <div className="form-group">
-          <label>Email Address</label>
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleLogin()}
-          />
+          <label>Email</label>
+          <input type="email" placeholder="Enter email" value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={onKey} />
         </div>
 
         <div className="form-group">
           <label>Password</label>
-          <input
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleLogin()}
-          />
+          <input type="password" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={onKey} />
         </div>
 
-        <button className="btn-primary" onClick={handleLogin} disabled={loading} style={{ width: "100%" }}>
-          {loading ? (
-            <span className="btn-loader">
-              <span className="loader-spinner"></span>
-              Signing in...
-            </span>
-          ) : (
-            "Sign In"
-          )}
+        <button className="btn-primary" onClick={handleLogin} disabled={loading}>
+          {loading ? <span className="btn-loader"><span className="loader-spinner"></span> Signing in...</span> : "Sign In"}
         </button>
       </div>
     </div>

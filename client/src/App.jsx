@@ -6,6 +6,10 @@ import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import UserDetail from "./pages/UserDetails";
 import AddLoan from "./pages/AddLoan";
+import AddUser from "./pages/AddUser";
+import AddEntry from "./pages/AddEntry";
+import ViewEntries from "./pages/ViewEntries";
+import ManageEntries from "./pages/ManageEntries";
 import Navbar from "./components/Navbar";
 
 function App() {
@@ -19,8 +23,12 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/users" element={<Users />} />
+        <Route path="/add-user" element={<AddUser />} />
         <Route path="/user/:name" element={<UserDetail />} />
         <Route path="/add-loan/:name" element={<AddLoan />} />
+        <Route path="/add-entry" element={<AddEntry />} />
+        <Route path="/view-entries" element={<ViewEntries />} />
+        <Route path="/manage-entries" element={<ManageEntries />} />
       </Routes>
     </BrowserRouter>
   );
