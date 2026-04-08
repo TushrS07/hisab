@@ -39,8 +39,8 @@ export default function Login({ setAuth }) {
         {error && <div className="alert alert-error">{error}</div>}
 
         <div className="form-group">
-          <label>Email</label>
-          <input type="email" placeholder="Enter email" value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={onKey} />
+          <label>User ID</label>
+          <input type="text" placeholder="Enter user ID" value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={onKey} />
         </div>
 
         <div className="form-group">
