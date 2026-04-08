@@ -16,14 +16,17 @@ console.log(process.env.CORS_ORIGIN);
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://192.168.1.7:5173",
   process.env.CORS_ORIGIN
-].filter(Boolean);
+];
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error("Not allowed by CORS"), false);
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
   },
   credentials: true
 }));
@@ -33,7 +36,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/loans", loanRoutes);
 
-app.get("/", (req, res) => {
+app.get("/health", (req, res) => {
     res.send("Welcome to Hisab API");
 });
 
