@@ -5,9 +5,11 @@ export const createUser = async (req, res) => {
     const user = await User.create(req.body);
     res.json(user);
   } catch (err) {
-    console.error("User creation error:", err);
     if (err.code === 11000) {
-      return res.status(400).json("User already exists");
+      const field = Object.keys(err.keyPattern)[0];
+      if (field === "name") return res.status(400).json("Customer with this name already exists");
+      if (field === "phone") return res.status(400).json("Customer with this phone number already exists");
+      return res.status(400).json("Customer already exists");
     }
     res.status(500).json("Error creating user");
   }
@@ -24,7 +26,12 @@ export const updateUser = async (req, res) => {
     if (!user) return res.status(404).json("User not found");
     res.json(user);
   } catch (err) {
-    if (err.code === 11000) return res.status(400).json("User with this name already exists");
+    if (err.code === 11000) {
+      const field = Object.keys(err.keyPattern)[0];
+      if (field === "name") return res.status(400).json("Customer with this name already exists");
+      if (field === "phone") return res.status(400).json("Customer with this phone number already exists");
+      return res.status(400).json("Customer already exists");
+    }
     res.status(500).json("Error updating user");
   }
 };
