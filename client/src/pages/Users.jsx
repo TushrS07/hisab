@@ -7,6 +7,7 @@ export default function Users() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const fetchUsers = async () => {
     const res = await API.get("/users");
@@ -20,12 +21,15 @@ export default function Users() {
         setError("Please enter a name");
         return;
       }
+      setLoading(true);
       await API.post("/users", { name, phone });
       setName("");
       setPhone("");
       fetchUsers();
     } catch (err) {
       setError(err.response?.data || "Error adding user");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,8 +70,15 @@ export default function Users() {
             </div>
           </div>
           
-          <button className="btn-primary" onClick={addUser} style={{ width: "100%" }}>
-            ✓ Add User
+          <button className="btn-primary" onClick={addUser} disabled={loading} style={{ width: "100%" }}>
+            {loading ? (
+              <span className="btn-loader">
+                <span className="loader-spinner"></span>
+                Adding user...
+              </span>
+            ) : (
+              "✓ Add User"
+            )}
           </button>
         </div>
 

@@ -12,8 +12,10 @@ connectDB();
 
 const app = express();
 
+console.log(process.env.CORS_ORIGIN);
+
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    origin: "http://192.168.1.7:5173",
     credentials: true
 }));
 app.use(express.json());
@@ -21,6 +23,10 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/loans", loanRoutes);
+
+app.get("/", (req, res) => {
+    res.send("Welcome to Hisab API");
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));

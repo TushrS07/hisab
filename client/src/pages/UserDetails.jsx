@@ -114,43 +114,20 @@ export default function UserDetail() {
               <div className="form-section">
                 <h3 className="form-section-title">💰 Settlement Summary</h3>
                 
-                <div style={{ 
-                  display: "grid", 
-                  gridTemplateColumns: "1fr 1fr 1fr", 
-                  gap: "1rem",
-                  marginBottom: "1rem"
-                }}>
-                  <div style={{
-                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    color: "white",
-                    padding: "1rem",
-                    borderRadius: "0.5rem",
-                    textAlign: "center"
-                  }}>
-                    <div style={{ fontSize: "0.85rem", opacity: "0.9", marginBottom: "0.25rem" }}>Principal</div>
-                    <div style={{ fontSize: "1.5rem", fontWeight: "700" }}>₹{total.toLocaleString('en-IN')}</div>
+                <div className="summary-grid">
+                  <div className="summary-card" style={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}>
+                    <div className="summary-card-label">Principal</div>
+                    <div className="summary-card-value">₹{total.toLocaleString('en-IN')}</div>
                   </div>
 
-                  <div style={{
-                    background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-                    color: "white",
-                    padding: "1rem",
-                    borderRadius: "0.5rem",
-                    textAlign: "center"
-                  }}>
-                    <div style={{ fontSize: "0.85rem", opacity: "0.9", marginBottom: "0.25rem" }}>Interest</div>
-                    <div style={{ fontSize: "1.5rem", fontWeight: "700" }}>₹{interest.toFixed(2)}</div>
+                  <div className="summary-card" style={{ background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)" }}>
+                    <div className="summary-card-label">Interest</div>
+                    <div className="summary-card-value">₹{interest.toFixed(2)}</div>
                   </div>
 
-                  <div style={{
-                    background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-                    color: "white",
-                    padding: "1rem",
-                    borderRadius: "0.5rem",
-                    textAlign: "center"
-                  }}>
-                    <div style={{ fontSize: "0.85rem", opacity: "0.9", marginBottom: "0.25rem" }}>Total Due</div>
-                    <div style={{ fontSize: "1.5rem", fontWeight: "700" }}>₹{(total + interest).toFixed(2)}</div>
+                  <div className="summary-card" style={{ background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)" }}>
+                    <div className="summary-card-label">Total Due</div>
+                    <div className="summary-card-value">₹{(total + interest).toFixed(2)}</div>
                   </div>
                 </div>
               </div>

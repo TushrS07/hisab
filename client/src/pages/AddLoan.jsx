@@ -11,6 +11,7 @@ export default function AddLoan() {
   const [voucher, setVoucher] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     try {
@@ -19,6 +20,7 @@ export default function AddLoan() {
         setError("Please fill in all required fields");
         return;
       }
+      setLoading(true);
       await API.post("/loans", {
         userName: name,
         amount: parseFloat(amount),
@@ -30,6 +32,8 @@ export default function AddLoan() {
       navigate(`/user/${name}`);
     } catch (err) {
       setError(err.response?.data || "Error adding loan");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -90,10 +94,17 @@ export default function AddLoan() {
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-            <button className="btn-primary" onClick={handleSubmit}>
-              💾 Save Loan
+            <button className="btn-primary" onClick={handleSubmit} disabled={loading}>
+              {loading ? (
+                <span className="btn-loader">
+                  <span className="loader-spinner"></span>
+                  Saving...
+                </span>
+              ) : (
+                "💾 Save Loan"
+              )}
             </button>
-            <button className="btn-secondary" onClick={() => navigate(`/user/${name}`)}>
+            <button className="btn-secondary" onClick={() => navigate(`/user/${name}`)} disabled={loading}>
               ✕ Cancel
             </button>
           </div>

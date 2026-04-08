@@ -5,6 +5,7 @@ export default function Login({ setAuth }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     try {
@@ -13,11 +14,14 @@ export default function Login({ setAuth }) {
         setError("Please enter both email and password");
         return;
       }
+      setLoading(true);
       const res = await API.post("/auth/login", { email, password });
       localStorage.setItem("token", res.data.token);
       setAuth(true);
     } catch (err) {
       setError(err.response?.data || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,8 +59,15 @@ export default function Login({ setAuth }) {
           />
         </div>
 
-        <button className="btn-primary" onClick={handleLogin} style={{ width: "100%" }}>
-          Sign In
+        <button className="btn-primary" onClick={handleLogin} disabled={loading} style={{ width: "100%" }}>
+          {loading ? (
+            <span className="btn-loader">
+              <span className="loader-spinner"></span>
+              Signing in...
+            </span>
+          ) : (
+            "Sign In"
+          )}
         </button>
       </div>
     </div>
