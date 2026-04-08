@@ -2,7 +2,7 @@ import { useState } from "react";
 import API from "../api/api";
 
 export default function Login({ setAuth }) {
-  const [userId, setUserId] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -10,12 +10,12 @@ export default function Login({ setAuth }) {
   const handleLogin = async () => {
     try {
       setError("");
-      if (!userId || !password) {
-        setError("Please enter both username and password");
+      if (!email || !password) {
+        setError("Please enter both email and password");
         return;
       }
       setLoading(true);
-      const res = await API.post("/auth/login", { email: userId, password });
+      const res = await API.post("/auth/login", { email, password });
       localStorage.setItem("token", res.data.token);
       setAuth(true);
     } catch (err) {
@@ -40,7 +40,7 @@ export default function Login({ setAuth }) {
 
         <div className="form-group">
           <label>User ID</label>
-          <input type="text" placeholder="Enter user ID" value={userId} onChange={(e) => setEmail(e.target.value)} onKeyDown={onKey} />
+          <input type="text" placeholder="Enter user ID" value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={onKey} />
         </div>
 
         <div className="form-group">
