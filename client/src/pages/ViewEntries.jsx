@@ -15,6 +15,7 @@ export default function ViewEntries() {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fetched, setFetched] = useState(false);
+  const [hisabDate, setHisabDate] = useState(today);
 
   useEffect(() => {
     API.get("/users").then((res) => setUsers(res.data));
@@ -50,6 +51,7 @@ export default function ViewEntries() {
     setToDate(today);
     setPeriod("month");
     setInterest("");
+    setHisabDate(today);
     setSelectedUser("");
     setEntries([]);
     setFetched(false);
@@ -61,7 +63,7 @@ export default function ViewEntries() {
   const fmt = (n) => Math.abs(n).toLocaleString("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
 
   const interestRate = parseFloat(interest) || 0;
-  const now = new Date();
+  const now = new Date(hisabDate);
 
   // Calculate months between two dates (fractional)
   const monthsBetween = (d1, d2) => {
@@ -167,6 +169,11 @@ export default function ViewEntries() {
             <label>To</label>
             <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
           </div>
+        </div>
+
+        <div className="form-group">
+          <label>Hisab Date</label>
+          <input type="date" value={hisabDate} onChange={(e) => setHisabDate(e.target.value)} max={today} />
         </div>
 
         <div className="form-group">
